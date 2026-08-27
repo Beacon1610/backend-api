@@ -1,0 +1,39 @@
+name: Spring Boot CI
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # Chạy trên máy ảo Linux của GitHub
+
+    # BÍ QUYẾT: Bảo con robot tự động dựng một cái MySQL ảo để chạy Test!
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_DATABASE: backend_db
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+    - name: Tải code từ kho chứa về máy ảo
+      uses: actions/checkout@v3
+
+    - name: Cài đặt Java 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven 
+
+    - name: Cấp quyền thực thi cho Maven wrapper
+      run: chmod +x mvnw
+
+    - name: Build hệ thống và tự động chạy Test bằng Maven
+      run: ./mvnw clean package
