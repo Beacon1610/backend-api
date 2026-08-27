@@ -29,8 +29,6 @@ public class OrderControllerTest {
         registry.add("spring.datasource.username", () -> "root");
         registry.add("spring.datasource.password", () -> System.getenv("CI") != null ? "" : "root123");
     }
-
-
     // MockMvc giống như một chiếc Postman thu nhỏ được nhúng sẵn vào code
     @Autowired
     private MockMvc mockMvc;
