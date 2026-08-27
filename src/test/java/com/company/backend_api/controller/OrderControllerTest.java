@@ -18,12 +18,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class OrderControllerTest {
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
-        // Nếu đang chạy trên GitHub Actions, nó sẽ tự hiểu "mysql" là tên service.
-        // Còn ở máy cá nhân, nếu không tìm thấy "mysql", nó sẽ tự fallback về "localhost".
+        // Đồng bộ hoàn toàn tên service là "mysql-db" với file ci.yml
         String dbHost = System.getenv("CI") != null ? "mysql-db" : "localhost";
+
         registry.add("spring.datasource.url", () ->
                 "jdbc:mysql://" + dbHost + ":3306/backend_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC"
         );
+
+        // Bắt buộc phải có 2 dòng này để khớp mật khẩu trên GitHub Actions
+        registry.add("spring.datasource.username", () -> "root");
+        registry.add("spring.datasource.password", () -> System.getenv("CI") != null ? "" : "root123");
     }
 
 
