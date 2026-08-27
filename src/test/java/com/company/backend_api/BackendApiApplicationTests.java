@@ -9,12 +9,13 @@ import org.springframework.test.context.DynamicPropertySource;
 class BackendApiApplicationTests {
 	@DynamicPropertySource
 	static void configureProperties(DynamicPropertyRegistry registry) {
-		// Nếu đang chạy trên GitHub Actions, nó sẽ tự hiểu "mysql" là tên service.
-		// Còn ở máy cá nhân, nếu không tìm thấy "mysql", nó sẽ tự fallback về "localhost".
 		String dbHost = System.getenv("CI") != null ? "mysql" : "localhost";
 		registry.add("spring.datasource.url", () ->
 				"jdbc:mysql://" + dbHost + ":3306/backend_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC"
 		);
+		// THÊM 2 DÒNG NÀY ĐỂ ÉP MẬT KHẨU KHỚP VỚI GITHUB ACTIONS
+		registry.add("spring.datasource.username", () -> "root");
+		registry.add("spring.datasource.password", () -> System.getenv("CI") != null ? "" : "root123");
 	}
 	@Test
 	void contextLoads() {
