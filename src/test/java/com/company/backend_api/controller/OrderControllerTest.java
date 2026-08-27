@@ -5,16 +5,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(properties = "spring.datasource.url=jdbc:mysql://localhost:3306/backend_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC")
+@SpringBootTest
 @AutoConfigureMockMvc
 public class OrderControllerTest {
-
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+        // Nếu đang chạy trên GitHub Actions, nó sẽ tự hiểu "mysql" là tên service.
+        // Còn ở máy cá nhân, nếu không tìm thấy "mysql", nó sẽ tự fallback về "localhost".
+        String dbHost = System.getenv("CI") != null ? "mysql" : "localhost";
+        registry.add("spring.datasource.url", () ->
+                "jdbc:mysql://" + dbHost + ":3306/backend_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC"
+        );
+    }
     // MockMvc giống như một chiếc Postman thu nhỏ được nhúng sẵn vào code
     @Autowired
     private MockMvc mockMvc;
