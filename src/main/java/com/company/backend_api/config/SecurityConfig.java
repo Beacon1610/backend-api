@@ -43,15 +43,17 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/h2-console/**", "/error").permitAll()
                                 // Các API ai cũng truy cập được (Đăng ký, Đăng nhập)
                                 .requestMatchers("/api/auth/**").permitAll()
+
+
 
                                 // Ví dụ: API Xóa đơn hàng (DELETE) chỉ dành cho ADMIN
                         .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/orders/**").hasRole("ADMIN")
 
                                 // Các API GET, POST, PUT còn lại yêu cầu phải đăng nhập (USER hoặc ADMIN đều được)
-                                .requestMatchers("/api/orders/**").authenticated()
+                                .requestMatchers("/api/orders", "/api/orders/**").authenticated()
 
                                 .anyRequest().authenticated());
 
