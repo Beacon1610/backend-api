@@ -45,7 +45,16 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/h2-console/**", "/error").permitAll()
                                 // Các API ai cũng truy cập được (Đăng ký, Đăng nhập)
-                                .requestMatchers("/api/auth/**").permitAll()
+                                .requestMatchers("/api/auth/**",
+                                        "/v3/api-docs",
+                                        "/v3/api-docs/**",
+                                        "/swagger-resources",
+                                        "/swagger-resources/**",
+                                        "/configuration/ui",
+                                        "/configuration/security",
+                                        "/swagger-ui/**",
+                                        "/swagger-ui.html",
+                                        "/webjars/**").permitAll()
 
 
 
