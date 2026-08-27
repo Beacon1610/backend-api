@@ -9,7 +9,7 @@ import org.springframework.test.context.DynamicPropertySource;
 class BackendApiApplicationTests {
 	@DynamicPropertySource
 	static void configureProperties(DynamicPropertyRegistry registry) {
-		String dbHost = System.getenv("CI") != null ? "mysql" : "localhost";
+		String dbHost = System.getenv("CI") != null ? "mysql-db" : "localhost";
 		registry.add("spring.datasource.url", () ->
 				"jdbc:mysql://" + dbHost + ":3306/backend_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC"
 		);
