@@ -1,42 +1,40 @@
-name: Spring Boot CI
-
-on:
-  push:
-    branches: [ "main", "master" ]
-  pull_request:
-    branches: [ "main", "master" ]
 
 jobs:
-  build:
+build:
+    runs-on: ubuntu-latest # Chạy trên máy ảo Linux của GitHub
     runs-on: ubuntu-latest 
 
-    services:
-      mysql-db:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: root123
-          MYSQL_DATABASE: backend_db
-        ports:
-          - 3306:3306
+    # BÍ QUYẾT: Bảo con robot tự động dựng một cái MySQL ảo để chạy Test!
+services:
+mysql:
+image: mysql:8.0
+env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+MYSQL_DATABASE: backend_db
+ports:
+- 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
         options: >-
-          --health-cmd="mysqladmin ping -h localhost -uroot -proot123"
+          --health-cmd="mysqladmin ping"
           --health-interval=10s
           --health-timeout=5s
-          --health-retries=5
+          --health-retries=3
 
-    steps:
+   steps:
+    - name: Tải code từ kho chứa về máy ảo
     - name: Tải code từ kho chứa
-      uses: actions/checkout@v4
+uses: actions/checkout@v3
 
-    - name: Cài đặt Java 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: maven
+- name: Cài đặt Java 17
+@@ -32,8 +35,8 @@ jobs:
+distribution: 'temurin'
+cache: maven 
 
+    - name: Cấp quyền thực thi cho Maven wrapper
     - name: Cấp quyền thực thi
-      run: chmod +x mvnw
+run: chmod +x mvnw
 
+    - name: Build hệ thống và tự động chạy Test bằng Maven
     - name: Build và Test
-      run: ./mvnw clean package
+run: ./mvnw clean package
