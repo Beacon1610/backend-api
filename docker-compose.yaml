@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  # 1. Cấu hình Database MySQL
+  mysql-db:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: always
+    environment:
+      MYSQL_DATABASE: backend_db
+      MYSQL_ROOT_PASSWORD: root123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  # 2. Cấu hình Ứng dụng Spring Boot của bạn
+  backend-api:
+    build: .
+    container_name: my-backend-app
+    restart: always
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mysql-db
+
+volumes:
+  mysql_data:
