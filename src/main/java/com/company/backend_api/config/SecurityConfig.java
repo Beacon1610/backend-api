@@ -2,8 +2,10 @@ package com.company.backend_api.config;
 
 import com.company.backend_api.security.JwtAuthenticationFilter;
 import com.company.backend_api.security.JwtTokenProvider;
+import org.springframework.http.HttpMethod;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -40,9 +42,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         JwtAuthenticationFilter jwtFilter = new JwtAuthenticationFilter(tokenProvider);
         http
+                .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/h2-console/**", "/error").permitAll()
                                 // Các API ai cũng truy cập được (Đăng ký, Đăng nhập)
                                 .requestMatchers("/api/auth/**",
@@ -59,7 +63,7 @@ public class SecurityConfig {
 
 
                                 // Ví dụ: API Xóa đơn hàng (DELETE) chỉ dành cho ADMIN
-                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/orders/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/orders/**").hasRole("ADMIN")
 
                                 // Các API GET, POST, PUT còn lại yêu cầu phải đăng nhập (USER hoặc ADMIN đều được)
                                 .requestMatchers("/api/orders", "/api/orders/**").authenticated()
