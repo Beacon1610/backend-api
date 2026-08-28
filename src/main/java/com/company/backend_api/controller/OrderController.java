@@ -1,54 +1,35 @@
 package com.company.backend_api.controller;
 
 import com.company.backend_api.dto.OrderDto;
-import com.company.backend_api.repository.OrderRepository;
 import com.company.backend_api.service.OrderService;
 import com.company.backend_api.entity.OrderEntity;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 import jakarta.validation.Valid;
 
-import java.util.List;
-import com.company.backend_api.dto.OrderDto;import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.RequestParam;
 // Báo cho Spring Boot biết đây là nơi tiếp nhận API
 @RestController
 // Định nghĩa URL gốc cho toàn bộ class này
 @RequestMapping("/api/orders")
 public class OrderController {
-    // 1. Khai báo sự phụ thuộc vào "Đầu bếp"
     private final OrderService orderService;
-    @Autowired
-    private OrderRepository orderRepository;
 
-    // 2. Tiêm (Inject) qua Constructor.
-    // Spring Boot sẽ tự động lấy Đầu bếp từ bộ nhớ nhét vào đây.
+    // Chỉ tiêm Service (Đầu bếp) vào đây. Đã xóa bỏ hoàn toàn OrderRepository.
     public OrderController(OrderService orderService) {
         this.orderService = orderService;
     }
+
+    // 2. Tiêm (Inject) qua Constructor.
+    // Spring Boot sẽ tự động lấy Đầu bếp từ bộ nhớ nhét vào đây.
     @GetMapping
     public ResponseEntity<Page<OrderEntity>> getAllOrders(
-
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        // Tạo đối tượng phân trang (lấy trang số 'page', mỗi trang 'size' phần tử)
-        Pageable pageable = PageRequest.of(page, size);
-        Page<OrderEntity> orders;
-
-        // Nếu người dùng có nhập từ khóa tìm kiếm
-        if (keyword != null && !keyword.isEmpty()) {
-            orders = orderRepository.findByProductNameContainingIgnoreCase(keyword, pageable);
-        } else {
-            // Nếu không tìm kiếm gì thì lấy tất cả nhưng vẫn phân trang
-            orders = orderRepository.findAll(pageable);
-        }
-
+        // Bồi bàn nhận yêu cầu và quăng thẳng cho Đầu bếp xử lý
+        Page<OrderEntity> orders = orderService.getAllOrders(keyword, page, size);
         return ResponseEntity.ok(orders);
     }
 

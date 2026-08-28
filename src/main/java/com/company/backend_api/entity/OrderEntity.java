@@ -1,11 +1,11 @@
 package com.company.backend_api.entity;
 
 import jakarta.persistence.*;
-
+import java.io.Serializable;
 // Báo cho JPA biết class này sẽ biến thành 1 Bảng (Table) trong Database
 @Entity
 @Table(name = "orders")
-public class OrderEntity {
+public class OrderEntity implements Serializable {
 
     // Đây là Khóa chính (Primary Key), tự động tăng (Auto Increment)
     @Id

@@ -28,6 +28,7 @@ public class OrderControllerTest {
         // Bắt buộc phải có 2 dòng này để khớp mật khẩu trên GitHub Actions
         registry.add("spring.datasource.username", () -> "root");
         registry.add("spring.datasource.password", () -> System.getenv("CI") != null ? "" : "root123");
+        registry.add("spring.data.redis.host", () -> System.getenv("CI") != null ? "redis-db" : "localhost");
     }
     // MockMvc giống như một chiếc Postman thu nhỏ được nhúng sẵn vào code
     @Autowired

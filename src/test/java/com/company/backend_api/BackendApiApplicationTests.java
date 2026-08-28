@@ -17,6 +17,7 @@ class BackendApiApplicationTests {
 		);
 		registry.add("spring.datasource.username", () -> "root");
 		registry.add("spring.datasource.password", () -> System.getenv("CI") != null ? "" : "root123");
+		registry.add("spring.data.redis.host", () -> System.getenv("CI") != null ? "redis-db" : "localhost");
 	}
 
 	@Test
